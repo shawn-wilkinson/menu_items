@@ -1,7 +1,8 @@
-######Solution to Table XI Coding Challenge
-######Shawn Wilkinson
+######Solution to Table XI Coding Challenge: Menu Item Combinations
 
-Thanks for taking the time to look at my solution. If you have any quesitons, please feel free to reach out.
+Thanks for taking the time to look at my solution. If you have any questions, please feel free to reach out.
+
+-Shawn
 
 ######Usage Instructions:
 
