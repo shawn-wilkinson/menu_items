@@ -1,17 +1,23 @@
 class Item
+
     attr_reader :name, :price
 
     def initialize(name,price)
         @name, @price = name, price.to_f
     end
+
 end
 
 class List
-    def initialize(file_name)
-        @target_price = nil
+
+    attr_reader :solved
+
+    def initialize(file_name, target_price = nil)
+        @target_price = target_price.delete('$').to_f if target_price
         @file = File.open(file_name)
         @items = []
         @item_count = Hash.new
+        @solved = false
         setup_list
         process_list
     end
@@ -30,12 +36,8 @@ class List
     end
 
     def process_list
-        if item_prices_too_high?
-            output_no_result_found
-        elsif find_combination(@items,@target_price)
-            output_result
-        else
-            output_no_result_found
+        if !item_prices_too_high? && find_combination(@items,@target_price)
+            @solved = true
         end
     end
 
@@ -58,15 +60,23 @@ class List
         return false
     end
 
-    def output_result
-        puts "To spend a total of $#{sprintf('%.2f', @target_price)}, buy the following:"
-        @item_count.each do |name, qty|
-            puts "#{qty} #{name} at $#{sprintf('%.2f', price_lookup(name))} each" if qty > 0
+    def return_result
+        if @solved
+            include_item_prices_in_item_count
+            return @target_price, @item_count
+        else
+            return @target_price
         end
     end
 
-    def output_no_result_found
-        puts "There is no possible combination to reach a total of $#{@target_price}"
+    def include_item_prices_in_item_count
+        @item_count.each do |name, qty|
+            if qty > 0
+                @item_count[name] = [qty, price_lookup(name)]
+            else
+                @item_count.delete(name)
+            end
+        end
     end
 
     def item_prices_too_high?
@@ -80,6 +90,5 @@ class List
     def price_lookup(input_name)
         @items.find{|item| item.name == input_name}.price
     end
-end
 
-new_list = List.new(ARGV[0])
+end
